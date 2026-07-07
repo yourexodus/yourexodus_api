@@ -1,0 +1,7 @@
+Flask-Smorest
+Flask-SQLAlchemy
+passlib
+marshmallow
+gunicorn
+flask-migrate
+psycopg2-binary
