@@ -1,8 +1,6 @@
-# 🏪 Flask Store API
+# 🏪 Your Exodus API
 
-A fully functional **RESTful API** built with **Flask-Smorest** to manage store inventory, including items, stores, tags, and users.
-This project demonstrates best practices in API design, modular architecture, and Docker-based deployment — built while balancing full-time work and motherhood 💪🏽.
-
+A RESTful backend powering the Your Exodus website and CRM.
 ---
 
 ## 🚀 Features
