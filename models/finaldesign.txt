@@ -1,0 +1,37 @@
+                                        User
+                           +----------------------------+
+                           | id                         |
+                           | username                   |
+                           | email                      |
+                           +----------------------------+
+                              |      |        |      |
+             -----------------+------+--------+------+-----------------
+             |                |               |                        |
+            1|               1|              1|                       1|
+             |                |               |                        |
+            *|               *|              *|                       *|
+             |                |               |                        |
+       Journals      Prayer Requests    Testimonies        Bible Studies (Author)
+                                                              |
+                                                              | 1
+                                                              |
+                                                              *
+                                                 Bible Study Contributions
+                                                              *
+                                                              |
+                                                              | 1
+                                                              |
+                                                           User
+
+
+                       Category
+                +----------------------+
+                | id                   |
+                | name                 |
+                +----------------------+
+                     |             |
+                    1|            1|
+                     |             |
+                    *|            *|
+                     |             |
+                 Articles    Bible Studies
