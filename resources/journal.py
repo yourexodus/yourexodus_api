@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
@@ -265,6 +265,8 @@ class JournalDateRangeSearch(MethodView):
                 message="Date format must be YYYY-MM-DD."
             )
 
+        # Make end date inclusive
+        end = end + timedelta(days=1)
 
         journals = JournalModel.query.filter(
             JournalModel.created_at >= start,
