@@ -77,10 +77,9 @@ class JournalSchema(PlainJournalSchema):
 class PlainPrayerSchema(Schema):
     id = fields.Int(dump_only=True)
     title = fields.Str(required=True)
-    prayer = fields.Str(required=True)
+    entry = fields.Str(required=True)
     scripture = fields.Str()
     answered = fields.Bool()
-
 
 class PrayerSchema(PlainPrayerSchema):
     user_id = fields.Int(required=True, load_only=True)
