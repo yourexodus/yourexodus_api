@@ -92,7 +92,7 @@ class PlainPrayerSchema(Schema):
         dump_only=True
     )
 
-class PrayerSchema(PlainJournalSchema):
+class PrayerSchema(PlainPrayerSchema):
     user_id = fields.Int(required=True, load_only=True)
 
     user = fields.Nested(
