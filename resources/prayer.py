@@ -105,7 +105,7 @@ class Prayer(MethodView):
                 prayer.title
         )
 
-        prayer.prayer = prayer_data.get(
+        prayer.request = prayer_data.get(
                 "prayer",
                 prayer.prayer
         )
