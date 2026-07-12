@@ -36,6 +36,6 @@ class ArticleModel(db.Model):
 
     # Relationship
     category_attr = db.relationship(
-        "CategoryModel",
-        back_populates="articles_attr"
+        "CategoryModel" 
+        
     )

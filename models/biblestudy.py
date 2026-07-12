@@ -44,8 +44,7 @@ class BibleStudyModel(db.Model):
 
     category_attr = db.relationship(
         "CategoryModel",
-        back_populates="bible_studies_attr",
-        cascade="all, delete-orphan"
+        back_populates="bible_studies_attr" 
     )
 
     # Author
@@ -57,13 +56,11 @@ class BibleStudyModel(db.Model):
 
     user_attr = db.relationship(
         "UserModel",
-        back_populates="bible_studies_attr",
-        cascade="all, delete-orphan"
+        back_populates="bible_studies_attr" 
     )
 
     # Community Contributions
     contributions_attr = db.relationship(
         "BibleStudyContributionModel",
-        back_populates="bible_study_attr",
-        cascade="all, delete"
+        back_populates="bible_study_attr" 
     )

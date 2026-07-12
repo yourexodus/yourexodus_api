@@ -42,7 +42,6 @@ class TestimonyModel(db.Model):
     # Relationship
     user_attr = db.relationship(
         "UserModel",
-        back_populates="testimonies_attr",
-        cascade="all, delete"
+        back_populates="testimonies_attr" 
     )
     

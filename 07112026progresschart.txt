@@ -1,0 +1,52 @@
+
+
+✔ Project structure
+✔ Flask application setup
+✔ SQLAlchemy configured
+✔ Models created
+✔ Relationships created
+✔ Schemas created
+✔ Models imported into app.py
+✔ User resource file created
+
+⬜ User Registration endpoint
+⬜ Test registration
+⬜ Journal endpoints
+⬜ Category endpoints
+⬜ Article endpoints
+⬜ JWT Authentication
+⬜ Docker deployment
+
+
+The next step is to implement the User Registration endpoint.
+
+After that, we'll test it by sending a request like:
+
+POST /register
+
+{
+    "username": "marlainna",
+    "password": "password123",
+    "email": "me@example.com"
+}
+
+If everything is set up correctly, you'll get something like:
+
+{
+    "message": "User created successfully."
+}
+
+and the user will be saved in your database.
+
+After registration works
+
+We'll immediately move on to:
+
+GET Users
+GET User by ID
+Update User
+Delete User
+
+Then we'll build the Journal API, which is where the Your Exodus application really starts to take shape.
+
+I remember your goal isn't just to finish this API—it's also to create a strong portfolio project that demonstrates your skills with Flask, SQLAlchemy, REST APIs, Docker, and eventually JWT authentication. So we'll build it the same way a professional developer would, one tested endpoint at a time.

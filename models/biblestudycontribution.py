@@ -33,8 +33,7 @@ class BibleStudyContributionModel(db.Model):
 
     bible_study_attr = db.relationship(
         "BibleStudyModel",
-        back_populates="contributions_attr",
-        cascade="all, delete"
+        back_populates="contributions_attr" 
     )
 
     # Contributor
@@ -46,6 +45,5 @@ class BibleStudyContributionModel(db.Model):
 
     user_attr = db.relationship(
         "UserModel",
-        back_populates="study_contributions_attr",
-        cascade="all, delete"
+        back_populates="study_contributions_attr" 
     )
