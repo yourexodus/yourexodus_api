@@ -84,12 +84,13 @@ class PlainPrayerSchema(Schema):
     answered = fields.Bool()
 
     answered_date = fields.DateTime(
-        allow_none=True,
-        dump_only=True
+        dump_only=True,
+        allow_none=True
     )
 
-    created_at = fields.DateTime(dump_only=True)
-    updated_at = fields.DateTime(dump_only=True)
+    created_at = fields.DateTime(
+        dump_only=True
+    )
 
 class PrayerSchema(PlainJournalSchema):
     user_id = fields.Int(required=True, load_only=True)
