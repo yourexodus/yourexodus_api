@@ -76,19 +76,21 @@ class JournalSchema(PlainJournalSchema):
 
 class PlainPrayerSchema(Schema):
     id = fields.Int(dump_only=True)
+
     title = fields.Str(required=True)
-    entry = fields.Str(required=True)
-    scripture = fields.Str()
+    request = fields.Str(required=True)
+
+    status = fields.Str()
     answered = fields.Bool()
 
-class PrayerSchema(PlainPrayerSchema):
-    user_id = fields.Int(required=True, load_only=True)
-
-    user = fields.Nested(
-        PlainUserSchema,
+    answered_date = fields.DateTime(
+        allow_none=True,
         dump_only=True
     )
 
+    created_at = fields.DateTime(
+        dump_only=True
+    )
 
 # =====================================================
 # TESTIMONY
