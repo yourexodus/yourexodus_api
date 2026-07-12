@@ -88,10 +88,17 @@ class PlainPrayerSchema(Schema):
         dump_only=True
     )
 
-    created_at = fields.DateTime(
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
+class PrayerSchema(PlainJournalSchema):
+    user_id = fields.Int(required=True, load_only=True)
+
+    user = fields.Nested(
+        PlainUserSchema,
+	attribute="user_attr",
         dump_only=True
     )
-
 # =====================================================
 # TESTIMONY
 # =====================================================
