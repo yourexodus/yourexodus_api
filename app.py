@@ -8,11 +8,12 @@ from db import db
 from resources.user import blp as UserBlueprint
 from resources.journal import blp as JournalBlueprint
 from resources.prayer import blp as PrayerBlueprint
-# from resources.testimony import blp as TestimonyBlueprint
-# from resources.bible_study import blp as BibleStudyBlueprint
-# from resources.bible_study_contribution import blp as BibleStudyContributionBlueprint
+from resources.testimony import blp as TestimonyBlueprint
+from resources.biblestudy import blp as BibleStudyBlueprint
+from resources.biblestudycontribution import blp as BibleStudyContributionBlueprint
+from resources.article import blp as ArticleBlueprint
 # from resources.category import blp as CategoryBlueprint
-# from resources.article import blp as ArticleBlueprint
+
 
 # Models
 import models.user
@@ -26,7 +27,9 @@ import models.article
 
 
 def create_app(db_url=None):
+
     app = Flask(__name__)
+
 
     # -----------------------------
     # API Configuration
@@ -42,6 +45,7 @@ def create_app(db_url=None):
         "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
     )
 
+
     # -----------------------------
     # Database
     # -----------------------------
@@ -54,12 +58,16 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
 
+
     db.init_app(app)
+
 
     with app.app_context():
         db.create_all()
 
+
     api = Api(app)
+
 
     # -----------------------------
     # Register Blueprints
@@ -67,24 +75,31 @@ def create_app(db_url=None):
 
     api.register_blueprint(UserBlueprint)
 
-    # Uncomment as each resource is created.
-
     api.register_blueprint(JournalBlueprint)
+
     api.register_blueprint(PrayerBlueprint)
-    # api.register_blueprint(TestimonyBlueprint)
-    # api.register_blueprint(BibleStudyBlueprint)
-    # api.register_blueprint(BibleStudyContributionBlueprint)
+
+    api.register_blueprint(TestimonyBlueprint)
+
+    api.register_blueprint(BibleStudyBlueprint)
+
+    api.register_blueprint(BibleStudyContributionBlueprint)
+
+    api.register_blueprint(ArticleBlueprint)
+
     # api.register_blueprint(CategoryBlueprint)
-    # api.register_blueprint(ArticleBlueprint)
+
 
     return app
 
 
+
 if __name__ == "__main__":
+
     app = create_app()
 
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 10000)),
+        port=int(os.environ.get("PORT",10000)),
         debug=True
     )
