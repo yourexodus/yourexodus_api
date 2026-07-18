@@ -20,9 +20,20 @@ class CategoryModel(db.Model):
         nullable=True
     )
 
+    # ============================================
+    # Relationships
+    # ============================================
+
     # One category can have many articles
     articles_attr = db.relationship(
         "ArticleModel",
+        back_populates="category_attr",
+        cascade="all, delete"
+    )
+
+    # One category can have many Bible studies
+    bible_studies_attr = db.relationship(
+        "BibleStudyModel",
         back_populates="category_attr",
         cascade="all, delete"
     )
