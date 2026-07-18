@@ -6,6 +6,7 @@ from db import db
 from models import UserModel
 from schemas import UserSchema
 
+
 blp = Blueprint(
     "Users",
     __name__,
@@ -27,6 +28,7 @@ class UserRegister(MethodView):
         Register a new user.
         """
 
+        # Check username exists
         if UserModel.query.filter_by(
             username=user_data["username"]
         ).first():
@@ -35,8 +37,19 @@ class UserRegister(MethodView):
                 message="A user with that username already exists."
             )
 
+        # Check email exists
+        if UserModel.query.filter_by(
+            email=user_data["email"]
+        ).first():
+            abort(
+                409,
+                message="A user with that email already exists."
+            )
+
+        # Create user
         user = UserModel(
             username=user_data["username"],
+            email=user_data["email"],
             password=pbkdf2_sha256.hash(
                 user_data["password"]
             )
@@ -125,7 +138,9 @@ class User(MethodView):
 
         user = UserModel.query.get_or_404(user_id)
 
+        # Update username
         if "username" in user_data:
+
             existing_user = UserModel.query.filter_by(
                 username=user_data["username"]
             ).first()
@@ -138,10 +153,30 @@ class User(MethodView):
 
             user.username = user_data["username"]
 
+
+        # Update email
+        if "email" in user_data:
+
+            existing_email = UserModel.query.filter_by(
+                email=user_data["email"]
+            ).first()
+
+            if existing_email and existing_email.id != user.id:
+                abort(
+                    409,
+                    message="Email already exists."
+                )
+
+            user.email = user_data["email"]
+
+
+        # Update password
         if "password" in user_data:
+
             user.password = pbkdf2_sha256.hash(
                 user_data["password"]
             )
+
 
         db.session.commit()
 
