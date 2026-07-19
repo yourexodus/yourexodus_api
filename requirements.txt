@@ -6,3 +6,4 @@ gunicorn
 flask-migrate
 psycopg2-binary
 python-dotenv==1.2.2
+flask-cors
