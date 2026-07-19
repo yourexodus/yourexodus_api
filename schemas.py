@@ -6,10 +6,15 @@ from marshmallow import Schema, fields
 # =====================================================
 
 class PlainUserSchema(Schema):
+
     id = fields.Int(dump_only=True)
+
     username = fields.Str(required=True)
+
     email = fields.Email(required=True)
 
+
+# Used when registering a new user
 class UserSchema(PlainUserSchema):
 
     password = fields.Str(
@@ -47,6 +52,18 @@ class UserSchema(PlainUserSchema):
         dump_only=True
     )
 
+
+# Used ONLY for logging in
+class UserLoginSchema(Schema):
+
+    username = fields.Str(
+        required=True
+    )
+
+    password = fields.Str(
+        required=True,
+        load_only=True
+    )
 
 
 # =====================================================

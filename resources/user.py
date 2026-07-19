@@ -4,7 +4,7 @@ from passlib.hash import pbkdf2_sha256
 
 from db import db
 from models import UserModel
-from schemas import UserSchema
+from schemas import UserSchema, UserLoginSchema
 
 
 blp = Blueprint(
@@ -68,7 +68,7 @@ class UserRegister(MethodView):
 @blp.route("/users/login")
 class UserLogin(MethodView):
 
-    @blp.arguments(UserSchema)
+    @blp.arguments(UserLoginSchema)
     def post(self, user_data):
         """
         Authenticate a user.
