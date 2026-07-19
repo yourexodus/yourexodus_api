@@ -69,14 +69,14 @@ def create_app(db_url=None):
     #    db.create_all()
 
 
-    api = Api(app)
+    # api = Api(app)
 
 
     # -----------------------------
     # Register Blueprints
     # -----------------------------
 
-    api.register_blueprint(UserBlueprint)
+    #api.register_blueprint(UserBlueprint)
 
     #api.register_blueprint(JournalBlueprint)
 
