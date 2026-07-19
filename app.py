@@ -78,17 +78,17 @@ def create_app(db_url=None):
 
     api.register_blueprint(UserBlueprint)
 
-    api.register_blueprint(JournalBlueprint)
+    #api.register_blueprint(JournalBlueprint)
 
-    api.register_blueprint(PrayerBlueprint)
+    #api.register_blueprint(PrayerBlueprint)
 
-    api.register_blueprint(TestimonyBlueprint)
+    #api.register_blueprint(TestimonyBlueprint)
 
-    api.register_blueprint(BibleStudyBlueprint)
+    #api.register_blueprint(BibleStudyBlueprint)
 
-    api.register_blueprint(BibleStudyContributionBlueprint)
+    #api.register_blueprint(BibleStudyContributionBlueprint)
 
-    api.register_blueprint(ArticleBlueprint)
+    #api.register_blueprint(ArticleBlueprint)
 
     # api.register_blueprint(CategoryBlueprint)
 
