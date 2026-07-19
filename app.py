@@ -33,6 +33,13 @@ def create_app(db_url=None):
 
     app = Flask(__name__)
 
+    CORS(
+        app,
+        origins=[
+            "https://yourexodus.github.io"
+        ]
+    )
+
     # -----------------------------
     # API Configuration
     # -----------------------------
