@@ -94,6 +94,9 @@ class UserLogin(MethodView):
             )
 
         return {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
             "message": "Login successful."
         }, 200
 
