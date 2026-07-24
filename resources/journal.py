@@ -277,3 +277,24 @@ class JournalDateRangeSearch(MethodView):
         return journals
 
  
+# =====================================================
+# GET PUBLIC JOURNALS
+# =====================================================
+
+@blp.route("/journals/public")
+class PublicJournalList(MethodView):
+
+    @blp.response(200, JournalSchema(many=True))
+    def get(self):
+        """
+        Get all public journal entries.
+        """
+
+        journals = (
+            JournalModel.query
+            .filter_by(is_private=False)
+            .order_by(JournalModel.created_at.desc())
+            .all()
+        )
+
+        return journals
