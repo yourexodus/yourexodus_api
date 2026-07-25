@@ -284,10 +284,9 @@ class JournalDateRangeSearch(MethodView):
 @blp.route("/journals/public")
 class PublicJournalList(MethodView):
 
-    @blp.response(200, JournalSchema(many=True))
     def get(self):
         """
-        Get all public journal entries.
+        Get all public journal entries with author information.
         """
 
         journals = (
@@ -297,4 +296,33 @@ class PublicJournalList(MethodView):
             .all()
         )
 
-        return journals
+
+        return [
+
+            {
+                "id": journal.id,
+
+                "title": journal.title,
+
+                "entry": journal.entry,
+
+                "scripture": journal.scripture,
+
+                "mood": journal.mood,
+
+                "created_at":
+                journal.created_at.isoformat()
+                if journal.created_at
+                else None,
+
+
+                "username":
+                journal.user_attr.username
+                if journal.user_attr
+                else "Community Member"
+
+            }
+
+            for journal in journals
+
+        ]
