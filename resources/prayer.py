@@ -11,11 +11,12 @@ from models.prayer import PrayerModel
 from schemas import PrayerSchema
 
 
-from openai import OpenAI
+from google import genai
 
-openai_client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
 )
+
 
 blp = Blueprint(
     "prayers",
@@ -46,12 +47,12 @@ def generate_ai_prayer(request_text, category):
     - a personal prayer
     """
 
-    response = openai_client.responses.create(
-        model="gpt-5-mini",
-        input=prompt
+    response = client.models.generate_content(
+    model="gemini-2.5-flash",
+    contents=prompt
     )
 
-    return response.output_text
+    return response.text
 
 
 # =====================================================
