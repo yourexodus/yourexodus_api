@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
@@ -9,21 +10,51 @@ from models.prayer import PrayerModel
 from schemas import PrayerSchema
 
 
+from openai import OpenAI
+
+openai_client = OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
+
 blp = Blueprint(
     "prayers",
     __name__,
     description="Operations on prayer entries"
 )
 
-# PART I
-# ✅ Blueprint setup
-# ✅ Create prayer (POST /prayers)
-# ✅ Get all prayers (GET /prayers)
-# ✅ Get one prayer (GET /prayers/<prayer_id>)
-# ✅ Update prayer (PUT /prayers/<prayer_id>)
-# ✅ Delete prayer (DELETE /prayers/<prayer_id>)
+
 # =====================================================
-# CREATE, GET ALL prayerS
+# AI PRAYER GENERATOR
+# =====================================================
+
+def generate_ai_prayer(request_text, category):
+
+    prompt = f"""
+    Write a compassionate Christian prayer.
+
+    Prayer request:
+    {request_text}
+
+    Category:
+    {category}
+
+    Include:
+    - encouragement
+    - scripture
+    - hope
+    - a personal prayer
+    """
+
+    response = openai_client.responses.create(
+        model="gpt-5-mini",
+        input=prompt
+    )
+
+    return response.output_text
+
+
+# =====================================================
+# CREATE AND GET ALL PRAYERS
 # =====================================================
 
 @blp.route("/prayers")
@@ -34,6 +65,7 @@ class PrayerList(MethodView):
         """
         Get all prayer entries
         """
+
         return PrayerModel.query.all()
 
 
@@ -44,153 +76,187 @@ class PrayerList(MethodView):
         Create a new prayer entry
         """
 
-        prayer = PrayerModel(**prayer_data)
+        prayer = PrayerModel(
+            title=prayer_data["title"],
+            request=prayer_data["request"],
+            user_id=prayer_data["user_id"],
+            category=prayer_data.get("category"),
+            is_private=prayer_data.get(
+                "is_private",
+                True
+            )
+        )
+
+
+        prayer.ai_response = generate_ai_prayer(
+            prayer.request,
+            prayer.category
+        )
+
 
         try:
+
             db.session.add(prayer)
             db.session.commit()
 
+
         except SQLAlchemyError:
+
             db.session.rollback()
+
             abort(
                 500,
                 message="An error occurred while creating the prayer."
             )
 
+
         return prayer
 
 
+
 # =====================================================
-# GET ONE, UPDATE, DELETE prayer
+# GET ONE, UPDATE, DELETE PRAYER
 # =====================================================
 
 @blp.route("/prayers/<int:prayer_id>")
 class Prayer(MethodView):
 
+
     @blp.response(200, PrayerSchema)
     def get(self, prayer_id):
-        """
-        Get a prayer entry by ID
-        """
 
         prayer = PrayerModel.query.get(prayer_id)
 
+
         if not prayer:
+
             abort(
                 404,
-                message="prayer not found."
+                message="Prayer not found."
             )
 
+
         return prayer
+
 
 
     @blp.arguments(PrayerSchema)
     @blp.response(200, PrayerSchema)
     def put(self, prayer_data, prayer_id):
-        """
-        Update an existing prayer entry
-        """
 
         prayer = PrayerModel.query.get(prayer_id)
 
+
         if not prayer:
+
             abort(
                 404,
-                message="prayer not found."
+                message="Prayer not found."
             )
 
 
         prayer.title = prayer_data.get(
-                "title",
-                prayer.title
+            "title",
+            prayer.title
         )
+
 
         prayer.request = prayer_data.get(
-                "prayer",
-                prayer.request
+            "request",
+            prayer.request
         )
 
-        prayer.scripture = prayer_data.get(
-                "scripture",
-                prayer.scripture
+
+        prayer.category = prayer_data.get(
+            "category",
+            prayer.category
         )
+
+
+        prayer.is_private = prayer_data.get(
+            "is_private",
+            prayer.is_private
+        )
+
 
         prayer.answered = prayer_data.get(
-                "answered",
-                prayer.answered
+            "answered",
+            prayer.answered
         )
 
 
         try:
+
             db.session.commit()
 
+
         except SQLAlchemyError:
+
             db.session.rollback()
+
             abort(
                 500,
                 message="An error occurred while updating the prayer."
             )
 
+
         return prayer
+
 
 
     @blp.response(200)
     def delete(self, prayer_id):
-        """
-        Delete a prayer entry
-        """
 
         prayer = PrayerModel.query.get(prayer_id)
 
+
         if not prayer:
+
             abort(
                 404,
-                message="prayer not found."
+                message="Prayer not found."
             )
 
 
         try:
+
             db.session.delete(prayer)
+
             db.session.commit()
 
+
         except SQLAlchemyError:
+
             db.session.rollback()
+
             abort(
                 500,
                 message="An error occurred while deleting the prayer."
             )
+
+
         return {
             "message": "Prayer deleted successfully."
         }
 
 
-# PART 2
-# ✅ Search prayers by keyword
-# ✅ Search prayers by date range
-# ✅ Swagger documentation
-# ✅ SQLAlchemy filtering
 
-    # =====================================================
-# SEARCH prayerS BY KEYWORD
+# =====================================================
+# SEARCH PRAYERS BY KEYWORD
 # =====================================================
 
 @blp.route("/prayers/search")
 class PrayerSearch(MethodView):
 
+
     @blp.response(200, PrayerSchema(many=True))
     def get(self):
-        """
-        Search prayers by keyword.
 
-        Example:
-        /prayers/search?keyword=faith
-        """
+        keyword = request.args.get("keyword")
 
-        keyword = (
-            request.args.get("keyword")
-        )
 
         if not keyword:
+
             abort(
                 400,
                 message="Keyword is required."
@@ -203,8 +269,8 @@ class PrayerSearch(MethodView):
         prayers = PrayerModel.query.filter(
             db.or_(
                 PrayerModel.title.ilike(search_term),
-                PrayerModel.prayer.ilike(search_term),
-                PrayerModel.scripture.ilike(search_term)
+                PrayerModel.request.ilike(search_term),
+                PrayerModel.category.ilike(search_term)
             )
         ).all()
 
@@ -214,32 +280,23 @@ class PrayerSearch(MethodView):
 
 
 # =====================================================
-# SEARCH prayerS BY DATE RANGE
+# SEARCH PRAYERS BY DATE RANGE
 # =====================================================
 
 @blp.route("/prayers/date-range")
 class PrayerDateRangeSearch(MethodView):
 
+
     @blp.response(200, PrayerSchema(many=True))
     def get(self):
-        """
-        Search prayers by creation date range.
 
-        Example:
-        /prayers/date-range?start=2026-01-01&end=2026-12-31
-        """
+        start_date = request.args.get("start")
 
-
-        start_date = request.args.get(
-            "start"
-        )
-
-        end_date = request.args.get(
-            "end"
-        )
+        end_date = request.args.get("end")
 
 
         if not start_date or not end_date:
+
             abort(
                 400,
                 message="Both start and end dates are required."
@@ -247,24 +304,29 @@ class PrayerDateRangeSearch(MethodView):
 
 
         try:
+
             start = datetime.strptime(
                 start_date,
                 "%Y-%m-%d"
             )
+
 
             end = datetime.strptime(
                 end_date,
                 "%Y-%m-%d"
             )
 
+
         except ValueError:
+
             abort(
                 400,
                 message="Date format must be YYYY-MM-DD."
             )
 
-        # Make end date inclusive
+
         end = end + timedelta(days=1)
+
 
         prayers = PrayerModel.query.filter(
             PrayerModel.created_at >= start,
@@ -273,5 +335,3 @@ class PrayerDateRangeSearch(MethodView):
 
 
         return prayers
-
- 
