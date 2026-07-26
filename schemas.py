@@ -149,6 +149,17 @@ class PlainPrayerSchema(Schema):
         dump_only=True
     )
 
+    category = fields.Str(
+        allow_none=True
+    )
+
+    is_private = fields.Bool()
+
+    ai_response = fields.Str(
+        allow_none=True,
+        dump_only=True
+    )
+
 
 class PrayerSchema(PlainPrayerSchema):
 

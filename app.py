@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_cors import CORS
+from flask_migrate import Migrate
 
 load_dotenv()
 
@@ -70,6 +71,7 @@ def create_app(db_url=None):
 
     db.init_app(app)
 
+    migrate = Migrate(app, db)
 
     # -----------------------------
     # Health Check
