@@ -31,28 +31,42 @@ blp = Blueprint(
 
 def generate_ai_prayer(request_text, category):
 
-    prompt = f"""
-    Write a compassionate Christian prayer.
+    try:
 
-    Prayer request:
-    {request_text}
+        print("=== GENERATING AI PRAYER ===")
 
-    Category:
-    {category}
+        prompt = f"""
+        Write a compassionate Christian prayer.
 
-    Include:
-    - encouragement
-    - scripture
-    - hope
-    - a personal prayer
-    """
+        Prayer request:
+        {request_text}
 
-    response = client.models.generate_content(
-    model="gemini-3.5-flash",
-    contents=prompt
-    )
+        Category:
+        {category}
 
-    return response.text
+        Include:
+        - encouragement
+        - scripture
+        - hope
+        - a personal prayer
+        """
+
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",   # or whatever model you're testing
+            contents=prompt
+        )
+
+        print("Gemini Response:")
+        print(response)
+
+        return response.text
+
+    except Exception as e:
+
+        print("=== GEMINI ERROR ===")
+        print(e)
+
+        return None
 
 
 # =====================================================
@@ -94,7 +108,7 @@ class PrayerList(MethodView):
             prayer.request,
             prayer.category
         )
-
+        print("AI Response Saved:", prayer.ai_response)
 
         try:
 
