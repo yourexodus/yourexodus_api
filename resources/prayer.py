@@ -52,7 +52,7 @@ def generate_ai_prayer(request_text, category):
         """
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",   # or whatever model you're testing
+            model="gemini-3-flash",   # or whatever model you're testing
             contents=prompt
         )
 
