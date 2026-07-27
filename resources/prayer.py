@@ -1,12 +1,20 @@
 import os
+from dotenv import load_dotenv
+from flask import Flask, jsonify
+from flask_smorest import Api
+from flask_cors import CORS
+from flask_migrate import Migrate
+
+load_dotenv()
+
+from db import db
 from datetime import datetime, timedelta
 
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
-
-from db import db
+ 
 from models.prayer import PrayerModel
 from schemas import PrayerSchema
 
@@ -52,7 +60,7 @@ def generate_ai_prayer(request_text, category):
         """
 
         response = client.models.generate_content(
-            model="gemini-3-flash",   # or whatever model you're testing
+            model="gemini-3-flash",    
             contents=prompt
         )
 

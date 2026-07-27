@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_cors import CORS
 from flask_migrate import Migrate
+ 
 
 load_dotenv()
 
