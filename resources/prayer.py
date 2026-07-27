@@ -1,25 +1,21 @@
 import os
-from dotenv import load_dotenv
-from flask import Flask, jsonify
-from flask_smorest import Api
-from flask_cors import CORS
-from flask_migrate import Migrate
-
-load_dotenv()
-
-from db import db
 from datetime import datetime, timedelta
 
+from dotenv import load_dotenv
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
- 
+
+from db import db
 from models.prayer import PrayerModel
 from schemas import PrayerSchema
 
-
 from google import genai
+
+
+load_dotenv()
+
 
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
@@ -41,8 +37,6 @@ def generate_ai_prayer(request_text, category):
 
     try:
 
-        print("=== GENERATING AI PRAYER ===")
-
         prompt = f"""
         Write a compassionate Christian prayer.
 
@@ -60,14 +54,12 @@ def generate_ai_prayer(request_text, category):
         """
 
         response = client.models.generate_content(
-            model="gemini-3.1-flash-lite",    
+            model="gemini-3.1-flash-lite",
             contents=prompt
         )
 
-        print("Gemini Response:")
-        print(response)
-
         return response.text
+
 
     except Exception as e:
 
@@ -77,6 +69,7 @@ def generate_ai_prayer(request_text, category):
         return None
 
 
+
 # =====================================================
 # CREATE AND GET ALL PRAYERS
 # =====================================================
@@ -84,21 +77,20 @@ def generate_ai_prayer(request_text, category):
 @blp.route("/prayers")
 class PrayerList(MethodView):
 
+
     @blp.response(200, PrayerSchema(many=True))
     def get(self):
-        """
-        Get all prayer entries
-        """
 
-        return PrayerModel.query.all()
+        return PrayerModel.query.order_by(
+            PrayerModel.created_at.desc()
+        ).all()
+
 
 
     @blp.arguments(PrayerSchema)
     @blp.response(201, PrayerSchema)
     def post(self, prayer_data):
-        """
-        Create a new prayer entry
-        """
+
 
         prayer = PrayerModel(
             title=prayer_data["title"],
@@ -112,15 +104,21 @@ class PrayerList(MethodView):
         )
 
 
-        prayer.ai_response = generate_ai_prayer(
-            prayer.request,
-            prayer.category
-        )
-        print("AI Response Saved:", prayer.ai_response)
-
         try:
 
+            # Save the prayer request first
             db.session.add(prayer)
+            db.session.commit()
+
+
+            # Generate AI response
+            prayer.ai_response = generate_ai_prayer(
+                prayer.request,
+                prayer.category
+            )
+
+
+            # Save AI response to same record
             db.session.commit()
 
 
@@ -296,6 +294,8 @@ class PrayerSearch(MethodView):
                 PrayerModel.request.ilike(search_term),
                 PrayerModel.category.ilike(search_term)
             )
+        ).order_by(
+            PrayerModel.created_at.desc()
         ).all()
 
 
@@ -355,6 +355,8 @@ class PrayerDateRangeSearch(MethodView):
         prayers = PrayerModel.query.filter(
             PrayerModel.created_at >= start,
             PrayerModel.created_at < end
+        ).order_by(
+            PrayerModel.created_at.desc()
         ).all()
 
 
