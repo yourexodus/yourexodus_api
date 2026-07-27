@@ -60,7 +60,7 @@ def generate_ai_prayer(request_text, category):
         """
 
         response = client.models.generate_content(
-            model="gemini-3-flash",    
+            model="gemini-3.5-flash",    
             contents=prompt
         )
 
