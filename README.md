@@ -5,7 +5,7 @@ A RESTful backend powering the Your Exodus website and CRM.
 
 ## 🚀 Features
 
-- 🔹 CRUD operations for **Users**, **Stores**, **Items**, and ** Tags**
+- 🔹 CRUD operations for **Users**, **Stores**, **Items**, and **Tags**
 - 🔹 RESTful routing with parameterized endpoints
 - 🔹 Input validation and robust error handling (404, 400)
 - 🔹 Modular architecture using **Blueprints** and **MethodViews**
