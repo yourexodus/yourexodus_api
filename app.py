@@ -38,7 +38,10 @@ def create_app(db_url=None):
     CORS(
         app,
         origins=[
+	    "https://your-exodus.com",
+            "https://www.your-exodus.com",
             "https://yourexodus.github.io"
+            
         ]
     )
 
