@@ -22,11 +22,13 @@ client = genai.Client(
 )
 
 
+
 blp = Blueprint(
     "prayers",
     __name__,
     description="Operations on prayer entries"
 )
+
 
 
 # =====================================================
@@ -53,20 +55,20 @@ def generate_ai_prayer(request_text, category):
         - a personal prayer
         """
 
+
         response = client.models.generate_content(
             model="gemini-3.1-flash-lite",
             contents=prompt
         )
 
+
         return response.text
 
 
-    except Exception as e:
-
-        print("=== GEMINI ERROR ===")
-        print(e)
+    except Exception:
 
         return None
+
 
 
 
@@ -91,34 +93,36 @@ class PrayerList(MethodView):
     @blp.response(201, PrayerSchema)
     def post(self, prayer_data):
 
-
         prayer = PrayerModel(
+
             title=prayer_data["title"],
+
             request=prayer_data["request"],
+
             user_id=prayer_data["user_id"],
-            category=prayer_data.get("category"),
+
+            category=prayer_data.get(
+                "category"
+            ),
+
             is_private=prayer_data.get(
                 "is_private",
                 True
             )
+
+        )
+
+
+        prayer.ai_response = generate_ai_prayer(
+            prayer.request,
+            prayer.category
         )
 
 
         try:
 
-            # Save the prayer request first
             db.session.add(prayer)
-            db.session.commit()
 
-
-            # Generate AI response
-            prayer.ai_response = generate_ai_prayer(
-                prayer.request,
-                prayer.category
-            )
-
-
-            # Save AI response to same record
             db.session.commit()
 
 
@@ -136,6 +140,7 @@ class PrayerList(MethodView):
 
 
 
+
 # =====================================================
 # GET ONE, UPDATE, DELETE PRAYER
 # =====================================================
@@ -147,7 +152,9 @@ class Prayer(MethodView):
     @blp.response(200, PrayerSchema)
     def get(self, prayer_id):
 
-        prayer = PrayerModel.query.get(prayer_id)
+        prayer = PrayerModel.query.get(
+            prayer_id
+        )
 
 
         if not prayer:
@@ -162,11 +169,14 @@ class Prayer(MethodView):
 
 
 
+
     @blp.arguments(PrayerSchema)
     @blp.response(200, PrayerSchema)
     def put(self, prayer_data, prayer_id):
 
-        prayer = PrayerModel.query.get(prayer_id)
+        prayer = PrayerModel.query.get(
+            prayer_id
+        )
 
 
         if not prayer:
@@ -207,6 +217,23 @@ class Prayer(MethodView):
         )
 
 
+        if prayer.answered:
+
+            prayer.status = "Answered"
+
+
+            if prayer.answered_date is None:
+
+                prayer.answered_date = datetime.utcnow()
+
+
+        else:
+
+            prayer.status = "New"
+
+            prayer.answered_date = None
+
+
         try:
 
             db.session.commit()
@@ -224,12 +251,14 @@ class Prayer(MethodView):
 
         return prayer
 
-
+    
 
     @blp.response(200)
     def delete(self, prayer_id):
 
-        prayer = PrayerModel.query.get(prayer_id)
+        prayer = PrayerModel.query.get(
+            prayer_id
+        )
 
 
         if not prayer:
@@ -263,6 +292,7 @@ class Prayer(MethodView):
 
 
 
+
 # =====================================================
 # SEARCH PRAYERS BY KEYWORD
 # =====================================================
@@ -274,7 +304,9 @@ class PrayerSearch(MethodView):
     @blp.response(200, PrayerSchema(many=True))
     def get(self):
 
-        keyword = request.args.get("keyword")
+        keyword = request.args.get(
+            "keyword"
+        )
 
 
         if not keyword:
@@ -289,17 +321,32 @@ class PrayerSearch(MethodView):
 
 
         prayers = PrayerModel.query.filter(
+
             db.or_(
-                PrayerModel.title.ilike(search_term),
-                PrayerModel.request.ilike(search_term),
-                PrayerModel.category.ilike(search_term)
+
+                PrayerModel.title.ilike(
+                    search_term
+                ),
+
+                PrayerModel.request.ilike(
+                    search_term
+                ),
+
+                PrayerModel.category.ilike(
+                    search_term
+                )
+
             )
+
         ).order_by(
+
             PrayerModel.created_at.desc()
+
         ).all()
 
 
         return prayers
+
 
 
 
@@ -314,9 +361,13 @@ class PrayerDateRangeSearch(MethodView):
     @blp.response(200, PrayerSchema(many=True))
     def get(self):
 
-        start_date = request.args.get("start")
+        start_date = request.args.get(
+            "start"
+        )
 
-        end_date = request.args.get("end")
+        end_date = request.args.get(
+            "end"
+        )
 
 
         if not start_date or not end_date:
@@ -349,14 +400,21 @@ class PrayerDateRangeSearch(MethodView):
             )
 
 
-        end = end + timedelta(days=1)
+        end = end + timedelta(
+            days=1
+        )
 
 
         prayers = PrayerModel.query.filter(
+
             PrayerModel.created_at >= start,
+
             PrayerModel.created_at < end
+
         ).order_by(
+
             PrayerModel.created_at.desc()
+
         ).all()
 
 
