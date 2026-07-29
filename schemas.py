@@ -12,7 +12,9 @@ class PlainUserSchema(Schema):
     username = fields.Str(required=True)
 
     email = fields.Email(required=True)
-
+    is_admin = fields.Bool(
+        dump_only=True
+    )
 
 # Used when registering a new user
 class UserSchema(PlainUserSchema):

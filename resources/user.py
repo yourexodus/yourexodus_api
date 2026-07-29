@@ -52,7 +52,8 @@ class UserRegister(MethodView):
             email=user_data["email"],
             password=pbkdf2_sha256.hash(
                 user_data["password"]
-            )
+            ),
+    	    is_admin=False
         )
 
         db.session.add(user)
@@ -97,6 +98,7 @@ class UserLogin(MethodView):
             "id": user.id,
             "username": user.username,
             "email": user.email,
+    	    "is_admin": user.is_admin,
             "message": "Login successful."
         }, 200
 
