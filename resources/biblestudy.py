@@ -17,6 +17,10 @@ blp = Blueprint(
 @blp.route("/biblestudies")
 class BibleStudyList(MethodView):
 
+    def options(self):
+        """Handle CORS preflight requests."""
+        return "", 200
+
     @blp.response(200, BibleStudySchema(many=True))
     def get(self):
         """Fetch all published and draft Bible studies."""
@@ -37,7 +41,6 @@ class BibleStudyList(MethodView):
 
         return bible_study
 
-
 @blp.route("/bible-studies/<int:biblestudy_id>")
 @blp.route("/biblestudies/<int:biblestudy_id>")
 class BibleStudy(MethodView):
@@ -48,7 +51,7 @@ class BibleStudy(MethodView):
         bible_study = BibleStudyModel.query.get_or_404(biblestudy_id)
         return bible_study
 
-    @blp.arguments(BibleStudySchema)
+    @blp.arguments(BibleStudySchema(partial=True))
     @blp.response(200, BibleStudySchema)
     def put(self, bible_study_data, biblestudy_id):
         """Update an existing Bible study or create a new one with a specific ID."""
